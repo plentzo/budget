@@ -82,8 +82,9 @@
 
 # Budgets
 
-1. A budget assigns expected expenses per transaction category
-2. Every month the budget "starts over":
+1. A budget assigns expected expenses per transaction category.
+2. Users can have multiple budgets.
+3. Every month the budget "starts over":
     1. A new copy of the budget is made.
         1. Any changes to the budget impact this budget and future budgets.
         2. All prior month budgets are set in stone.
@@ -91,15 +92,34 @@
     3. All **rollover** remaining amounts are carried over:
         1. If the previous month was under budget by `$x`, keep this month's budget at `$0` but don't start using it until we reach `$x` in the category.
         2. If the previous month was over budget by `$x`, immediately apply it to this month's starting budget (it starts at `$x`).
-3. Expenses can be budgeted **monthly**, **bi-monthly**, **quarterly**, or **yearly**
+4. Expenses can be budgeted **monthly**, **bi-monthly**, **quarterly**, or **yearly**
     1. Monthly expenses are simple; they reset every month
-    2. Bi-monthly expenses are tracked as `total/2` per month. Leftovers roll over. They assume you pay $`x` every two months, so we should budget $`x/2` every month.
-    3. Quarterly expenses are tracked as `total/3` per month. Leftovers roll over. They assume you pay $`x` every three months, so we should budget $`x/3` every month.
-    4. Yearly expenses are tracked as `total/12` per month. Leftovers roll over. They assume you pay $`x` every year, so we should budget $`x/12` every month.
+    2. Bi-monthly expenses are tracked as `total/2` per month. Leftovers roll over. They assume you pay `$x` every two months, so we should budget `$x/2` every month.
+    3. Quarterly expenses are tracked as `total/4` per month. Leftovers roll over. They assume you pay `$x` every three months, so we should budget `$x/4` every month.
+    4. Yearly expenses are tracked as `total/12` per month. Leftovers roll over. They assume you pay `$x` every year, so we should budget `$x/12` every month.
 
 ## Budgets API
 
+### Budget
 
+ - budgetId: Unique for a user's account and the month (a new one is generated when a month rolls over)
+ - previousBudgetId: The ID for the budget that precedes this one. Used to perform initial calculations, rollovers.
+ - name: The name of the budget (useful for having multiple budgets per month).
+ - dateStart: The start date for the budget (the first of the month). Used to query transactions.
+ - dateEnd: The end date for the budget (the first of the following month). Used to query transactions.
+ - categories: The budget's categories and their planned amounts. (See below)
+ - note: Optional. Notes about the budget for that month.
+
+### Budget Category
+
+ - categoryId: The ID of the category.
+ - type: monthly | bimonthly | quarterly | yearly.
+    - monthly = `amount/1`
+    - bimonthly = `amount/2` with rollover
+    - quarterly = `amount/4` with rollover
+    - yearly = `amount/12` with rollover
+ - amount: The numerical amount to be budgeted.
+ - rollover: If `true`, roll the remaining budget/expense over to the next month. bi-monthly, quarterly, and yearly budgets all roll over automatically.
 
 
 # Utilities
